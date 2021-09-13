@@ -122,3 +122,7 @@ STATIC_URL = '/static/'
 
 #Tessesract Location
 tesseract_location="C:\\Program Files\\Tesseract-OCR\\tesseract.exe" 
+
+#for invoice images
+MEDIA_URL='/media/'
+MEDIA_ROOT=os.path.join(BASE_DIR,"media")
