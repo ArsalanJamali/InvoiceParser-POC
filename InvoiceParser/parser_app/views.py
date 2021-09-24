@@ -6,7 +6,7 @@ from numpy import fromstring,uint8
 import cv2
 from InvoiceParser.settings import tesseract_location
 import json
-from .models import Invoice,InvoiceLabels
+from .models import Invoice,InvoiceLabel
 
 pytesseract.pytesseract.tesseract_cmd=tesseract_location
 
@@ -29,7 +29,7 @@ class ParseDataView(View):
                value=pytesseract.image_to_string(ROI)
                value=value.strip()
                print(value)
-               label=InvoiceLabels(invoice_model=model,key=key,value=value,x_axis=x,y_axis=y,width=w,height=h)
+               label=InvoiceLabel(invoice_model=model,key=key,value=value,x_axis=x,y_axis=y,width=w,height=h)
                label.save()
                 
         return JsonResponse({'Perfect':'ok'})
