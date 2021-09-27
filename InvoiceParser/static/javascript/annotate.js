@@ -1,5 +1,9 @@
 const canvas2 = document.getElementById("canvas");
 const context2 = canvas.getContext("2d");
+// const label=document.getElementById('exampleFormControlInput1')
+
+
+
 
 const annotation = {
     x: 0,
@@ -54,6 +58,7 @@ function handleMouseUp(e) {
     canvas2.style.cursor = "default";
     isDrawing = false;
     var modal = document.getElementById("exampleModal");
+    // var label=document.getElementById('exampleFormControlInput1')
     if (boundingDelete) {
         boundingBoxes.splice(boundingId, 1);
         boundingButton.splice(boundingId, 1);
@@ -75,22 +80,26 @@ function handleMouseUp(e) {
                     box.y = o.y;
                     box.w = o.w;
                     box.h = Math.abs(o.h);
+                    box.label="";
                     button.id = boundingButton.length
                     button.x = oButton.x;
                     button.y = oButton.y;
                     button.w = oButton.w;
                     button.h = oButton.h;
+                    button.label="";
                 } else {
                     box.id = boundingButton.length
                     box.x = o.x;
                     box.y = o.y;
                     box.w = o.w;
                     box.h = Math.abs(o.h);
+                    box.label="";
                     button.id = boundingButton.length
                     button.x = oButton.x;
                     button.y = oButton.y;
                     button.w = oButton.w;
                     button.h = oButton.h;
+                    button.label="";
                 }
                 boundingBoxes.push(box);
                 boundingButton.push(button);
@@ -101,7 +110,8 @@ function handleMouseUp(e) {
                 //console.log(boundingButton);
                 drawed = false;
                 modal.style.display = "block";
-                $("#exampleModal").modal()
+                $("#exampleModal").modal();
+
             }
         } else {
             showdelete();
@@ -112,6 +122,7 @@ function handleMouseUp(e) {
 
     //draw();
     // boundingBoxes.splice(0, 1);
+    console.log('Annotation  Saved');
 }
 
 function draw() {
@@ -183,10 +194,7 @@ canvas2.addEventListener("mousedown", handleMouseDown);
 canvas2.addEventListener("mousemove", handleMouseMove);
 canvas2.addEventListener("mouseup", handleMouseUp);
 
-function savecanvas() {
-    var savedBoxes = boundingBoxes.slice(0);
-    console.log(savedBoxes); // ok
-}
+
 
 function resetcanvas() {
     context2.clearRect(0, 0, canvas2.width, canvas2.height);
@@ -231,3 +239,76 @@ function oMousePos(canvas2, evt) {
         y: Math.round(evt.clientY - ClientRect.top)
     }
 }
+
+
+$('#save_label_btn').on('click',function(e){
+    
+    var label=$('#exampleFormControlInput1');
+    var index=(boundingBoxes.length)-1;
+    boundingBoxes[index]['label']=label.val();
+    boundingButton[index]['label']=label.val();
+    label.val("");
+    $('#close_label_btn').click();
+    
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const image_canvas=document.getElementById('canvas2')
+
+
+function redirect_to_main()
+{
+    window.location.replace("/");
+}
+
+$('#ExportAnnotations_id').on('click',function(e){
+    e.preventDefault();
+    if(boundingBoxes.length==0)
+    {
+        alert('Kindly Annotate First');
+        return;
+    }
+    var coordinates=JSON.stringify(boundingBoxes);
+    var img64=image_canvas.toDataURL();
+    var url=$('#fileUpload').attr('data-url');
+    const csrftoken = getCookie('csrftoken');
+    
+    $.ajax({
+        type:'POST',
+        data:{
+            json_coord:coordinates,
+            img64:img64
+        },
+        url:url,
+        headers: { "X-CSRFToken":csrftoken },
+        success:function(response)
+        {
+            // $('#success_message').html('Congrats! '+response.Model_id+' Model was Created.. You will be redirected Shortly.')
+            // $('#success_message').css('display','block');
+            redirect_to_main();
+            // window.setTimeout(redirect_to_main,3000);
+        },
+        error: function (response)
+        {
+            alert(response);
+        }
+    });
+
+});
+
+

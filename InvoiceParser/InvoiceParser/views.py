@@ -10,7 +10,7 @@ class IndexPage(LoginRequiredMixin,ListView):
 
     def get_queryset(self):
         queryset=self.model.objects.filter(User=self.request.user)
-        return queryset.order_by('-created_at')
+        return queryset.order_by('-pk')
 
     def get_context_data(self, **kwargs):
         context=super().get_context_data(**kwargs)

@@ -22,7 +22,7 @@ class Invoice(models.Model):
     model_number=models.CharField(max_length=36,verbose_name=_('Model Number'),
                                     unique=True,blank=False,default=uuid.uuid4,
                                     help_text=_('This is used to identify this model'))
-    invoice_image=models.ImageField(upload_to=get_image_file_name,blank=False)
+    invoice_image=models.ImageField(upload_to=get_image_file_name,blank=True,null=True)
     created_at=models.DateField(auto_now_add=True,verbose_name=_('Creation Date')
                                 ,help_text=_('This is the date when model was created'))
 
