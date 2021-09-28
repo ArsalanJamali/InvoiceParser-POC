@@ -1,4 +1,6 @@
 var images = [];
+var invoice_id=0;
+var data;
 
 var form=document.getElementById('form')
    	  function image_select() {
@@ -7,10 +9,12 @@ var form=document.getElementById('form')
 			for (i = 0; i < image.length; i++) {
    	  	  	  if (check_duplicate(image[i].name)) {
                 images.push({
+					"id":invoice_id,
    	  	  	  	    "name" : image[i].name,
    	  	  	  	    "url" : URL.createObjectURL(image[i]),
    	  	  	  	    "file" : image[i],
    	  	  	    })
+					invoice_id+=1;
    	  	  	  } else 
    	  	  	  {
    	  	  	  	 alert(image[i].name + " is already added to the list");
@@ -65,6 +69,59 @@ if (document.cookie && document.cookie !== '') {
 }
 return cookieValue;
 }
+
+function getImageUrl(index)
+{
+	for(var i=0;i<images.length;i++)
+	{
+		if(images[i].id==index)
+		{
+			console.log(images[i].url);
+			return images[i].url;
+			
+		}
+	}
+}
+
+
+function get_new_page(response)
+{	
+	const csrftoken=getCookie('csrftoken')
+	var flag=true;
+	var post_data={};
+	for (const [key, value] of Object.entries(response)) {
+		if(flag)
+		{
+			post_data[key]=[getImageUrl(key),value];
+			flag=false;
+		}
+		else
+		{
+			post_data[key]=getImageUrl(key);
+		}
+	}
+
+	// console.log(post_data);
+
+
+	$.ajax({
+		url: $('#main_container').attr('data-url'),
+		type: 'POST',
+		data: {
+			post_data:JSON.stringify(post_data)
+		},
+		headers: { "X-CSRFToken":csrftoken },
+		success: function (response) {
+			$('#main_container').html(response);
+		},
+		error:function(response)
+		{
+			alert('Some error was detected please Try Again');
+		},
+	});
+	
+
+}
 		
 
 
@@ -77,7 +134,7 @@ $('#form').on('submit',function(e){
 	for(var i=0;i<images.length;i++)
 	{
 		// invoice_list.push();
-		formData.append('invoice '+(i+1),images[i].file)
+		formData.append(images[i].id,images[i].file)
 	}
 	//formData.append('image',invoice_list);
 
@@ -87,15 +144,17 @@ $('#form').on('submit',function(e){
             data: formData,
 			headers: { "X-CSRFToken":csrftoken },
             success: function (response) {
-                console.log(response)
+                data=JSON.parse(response);
+				get_new_page(data);
             },
 			error:function(response)
 			{
-				console.log(response)
+				alert('Some error was detected please Try Again');
 			},
             cache: false,
             contentType: false,
             processData: false
 	});
-	
+
 });
+

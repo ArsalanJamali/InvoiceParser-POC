@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render
-from django.views.generic import View
+from django.views.generic import View,TemplateView
 from django.http import JsonResponse
 import pytesseract
 from numpy import fromstring,uint8
@@ -113,3 +113,10 @@ class ProcessInvoices(LoginRequiredMixin,View):
         
         print(result_set)
         return JsonResponse(json.dumps(result_set),safe=False)
+
+class DisplayDataView(View):
+    template_name='display.html'
+    
+    def post(self,*args, **kwargs):
+        context=json.loads(self.request.POST['post_data'])
+        return render(self.request,self.template_name,{'data':json.dumps(context),'model_number':self.kwargs['model_number']})
