@@ -70,62 +70,15 @@ if (document.cookie && document.cookie !== '') {
 return cookieValue;
 }
 
-function getImageUrl(index)
-{
-	for(var i=0;i<images.length;i++)
-	{
-		if(images[i].id==index)
-		{
-			console.log(images[i].url);
-			return images[i].url;
-			
-		}
-	}
-}
-
-
-function get_new_page(response)
-{	
-	const csrftoken=getCookie('csrftoken')
-	var flag=true;
-	var post_data={};
-	for (const [key, value] of Object.entries(response)) {
-		if(flag)
-		{
-			post_data[key]=[getImageUrl(key),value];
-			flag=false;
-		}
-		else
-		{
-			post_data[key]=getImageUrl(key);
-		}
-	}
-
-	// console.log(post_data);
-
-
-	$.ajax({
-		url: $('#main_container').attr('data-url'),
-		type: 'POST',
-		data: {
-			post_data:JSON.stringify(post_data)
-		},
-		headers: { "X-CSRFToken":csrftoken },
-		success: function (response) {
-			$('#main_container').html(response);
-		},
-		error:function(response)
-		{
-			alert('Some error was detected please Try Again');
-		},
-	});
-	
-
-}
-		
-
 
 $('#form').on('submit',function(e){
+
+	if(images.length==0)
+	{
+		alert('Upload First');
+		e.preventDefault();
+		return;
+	}
 
 	e.preventDefault();
 	const csrftoken = getCookie('csrftoken');
@@ -133,10 +86,14 @@ $('#form').on('submit',function(e){
 
 	for(var i=0;i<images.length;i++)
 	{
-		// invoice_list.push();
-		formData.append(images[i].id,images[i].file)
+		formData.append('images_'+images[i].id,images[i].file)
+		formData.append(images[i].id,images[i].url)
 	}
 	//formData.append('image',invoice_list);
+
+	$('#proceed_btn_div').html(' <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">\
+	<span class="sr-only">Loading...</span>\
+  </div>')
 
 	$.ajax({
 			url: window.location.pathname,
@@ -144,8 +101,7 @@ $('#form').on('submit',function(e){
             data: formData,
 			headers: { "X-CSRFToken":csrftoken },
             success: function (response) {
-                data=JSON.parse(response);
-				get_new_page(data);
+                $('#main_container').html(response)
             },
 			error:function(response)
 			{

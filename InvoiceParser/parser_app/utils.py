@@ -101,3 +101,10 @@ def evaluate(invoice,bounding_box_list):
         i+=1
 
     return final_table
+
+
+    
+
+
+
+    

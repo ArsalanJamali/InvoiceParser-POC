@@ -1,9 +1,11 @@
+from ast import Str
 from django.shortcuts import redirect, render
 from django.views.generic import View,TemplateView
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import pytesseract
 from numpy import fromstring,uint8
 import cv2
+from pytesseract.pytesseract import Output
 from InvoiceParser.settings import tesseract_location
 import json
 from .models import Invoice,InvoiceLabel
@@ -15,6 +17,9 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .utils import *
+from openpyxl import Workbook
+from io import BytesIO
+
 
 pytesseract.pytesseract.tesseract_cmd=tesseract_location
 
@@ -72,7 +77,7 @@ class ProcessInvoices(LoginRequiredMixin,View):
         obj=get_object_or_404(Invoice,model_number=self.kwargs['model_number'])
         invoice_list=list()
         invoice_labels=obj.invoicelabel_set.all()
-
+        
         for key,image in request.FILES.items():
             obj=cv2.imdecode(fromstring(image.read(),uint8),cv2.IMREAD_UNCHANGED)
             invoice_list.append((key,obj))
@@ -80,6 +85,7 @@ class ProcessInvoices(LoginRequiredMixin,View):
         result_set=dict()
 
         for key,invoice in invoice_list:
+            key=key.split('_')[1]
             result_set[key]=dict()
             temp_invoice=invoice
             for label in invoice_labels:
@@ -111,12 +117,48 @@ class ProcessInvoices(LoginRequiredMixin,View):
                 # print(result_set)
                 invoice=temp_invoice
         
-        print(result_set)
-        return JsonResponse(json.dumps(result_set),safe=False)
+        for key in result_set.keys():
+            value=result_set[key]
+            result_set[key]=list([request.POST[key],value])
+        
 
-class DisplayDataView(View):
-    template_name='display.html'
+        return render(self.request,'display.html',{'data':json.dumps(result_set),'model_number':self.kwargs['model_number']})
+
+
+
+
+def download_csv(request):
+
+    obj=json.loads(request.body)
+    obj=obj['write_data']
+
+    csv=Workbook()
+    flag=True
+    sheet=None
+    for key in obj.keys():
+        if flag:
+            sheet=csv.active
+            flag=False
+        else:
+            sheet=csv.create_sheet()
+
+        for item,item_value in obj[key][1].items():
+            if item!='table':
+                sheet.append([item,item_value])
+            else:
+                for row in item_value:
+                    sheet.append(row)
+
+    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    response['Content-Disposition'] = 'attachment; filename=Invoice_data.xlsx'
     
-    def post(self,*args, **kwargs):
-        context=json.loads(self.request.POST['post_data'])
-        return render(self.request,self.template_name,{'data':json.dumps(context),'model_number':self.kwargs['model_number']})
+    csv.save(response)
+    return response
+
+def download_json(request):
+    obj=json.loads(request.body)
+    obj=obj['write_data']
+    response = HttpResponse(json.dumps(obj),content_type="application/json")
+    response['Content-Disposition'] = 'attachment; filename=Invoice_data.json'
+    return response    
+

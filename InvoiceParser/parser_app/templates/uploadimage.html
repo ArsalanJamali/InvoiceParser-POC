@@ -33,8 +33,21 @@
 
                 <!-- Begin Page Content -->
                 {% block body_block %}
-                <div class="container-fluid" id="main_container" data-url="{% url 'parser_app:view_content' model_number=model_no %}">
 
+            
+                <div class="container-fluid" id="main_container" data-url="{% url 'parser_app:download_csv' %}" data-url-json="{% url 'parser_app:download_json' %}">
+
+                 <div class="alert alert-info" role="alert" style="" >
+                         <h4 class="alert-heading">Process Invoice</h4>
+                    <p>
+                        Below You can process your invoice, upload at most 3 invoices in order to avoid exhaustion.   
+                        <b>
+                        <br>
+                        Note: Processing may take time so be patient. Cheers!  
+                        <b>
+                    </p>
+
+                </div>
                     <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Models No:  <b>{{ model_no }}</b></h1>
@@ -55,13 +68,13 @@
                         </div>
                  </div>
                  <br><br><br>
-                 <div class="row float-right " style="margin-right: 120px;">
-                    <button  class="btn btn-success btn-icon-split" type="submit" id="proceed_btn">
+                 <div class="row float-right " style="margin-right: 120px;" id="proceed_btn_div">
+                     <button  class="btn btn-success btn-icon-split" type="submit" id="proceed_btn">
                         <span class="icon text-white-50">
                                         <i class="fas fa-arrow-circle-right"></i>
                                     </span>
                         <span class="text">Proceed</span>
-                    </button>
+                    </button> 
                     </div>
                     </form>
 
