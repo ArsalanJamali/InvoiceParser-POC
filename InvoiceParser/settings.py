@@ -25,7 +25,7 @@ SECRET_KEY = '1$$i_2w-#%j6%s9!c=e%%gdf$sgmr&l*dl0rjq2ps79$i36z9^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['docextractor.herokuapp.com']
 
 
 # Application definition
