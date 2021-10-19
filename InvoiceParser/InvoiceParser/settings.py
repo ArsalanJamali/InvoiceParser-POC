@@ -124,7 +124,8 @@ STATICFILES_DIRS=[
 ]
 
 #Tessesract Location
-tesseract_location="C:\\Program Files\\Tesseract-OCR\\tesseract.exe" 
+#tesseract_location="C:\\Program Files\\Tesseract-OCR\\tesseract.exe" 
+tesseract_location='/app/.apt/usr/bin/tesseract'
 
 #for invoice images
 MEDIA_URL='/media/'
