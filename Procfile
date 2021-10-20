@@ -1,1 +1,1 @@
-web: gunicorn InvoiceParser.wsgi
+web: gunicorn InvoiceParser.wsgi --timeout 0
