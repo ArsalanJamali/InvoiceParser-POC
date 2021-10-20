@@ -129,7 +129,7 @@ STATIC_ROOT=os.path.join(BASE_DIR,'static')
 
 #Tessesract Location
 #tesseract_location="C:\\Program Files\\Tesseract-OCR\\tesseract.exe" 
-tesseract_location='/app/.apt/usr/bin/tesseract'
+tesseract_location='./app/.apt/usr/bin/tesseract'
 
 #for invoice images
 MEDIA_URL='/media/'
