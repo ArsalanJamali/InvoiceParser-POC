@@ -21,7 +21,7 @@ from openpyxl import Workbook
 from io import BytesIO
 
 
-pytesseract.pytesseract.tesseract_cmd=tesseract_location
+#pytesseract.pytesseract.tesseract_cmd=tesseract_location
 
 class ParseDataView(LoginRequiredMixin,View):
 
