@@ -4,7 +4,7 @@ import numpy as np
 import pytesseract
 from InvoiceParser.settings import tesseract_location
 
-#pytesseract.pytesseract.tesseract_cmd=tesseract_location
+pytesseract.pytesseract.tesseract_cmd=tesseract_location
 
 def check_value(value):
   return value!="" and len(value)!=0 and value!='—' and value!='-' and value!='=“'
